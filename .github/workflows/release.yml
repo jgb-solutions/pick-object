@@ -58,4 +58,4 @@ jobs:
           name: package-assets
 
       - name: Publish to npm
-        run: npm publish --provenance --access public
+        run: npm publish --provenance --access public --ignore-scripts
