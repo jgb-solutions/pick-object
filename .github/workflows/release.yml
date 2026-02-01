@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 jobs:
   build:
@@ -44,22 +44,25 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      
+
       # Clean Node environment for OIDC publishing
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          # REMOVED registry-url to prevent setup-node from creating a broken .npmrc
+          node-version: "20"
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Download Artifacts
         uses: actions/download-artifact@v4
         with:
           name: package-assets
 
-      # Manually configure registry scope WITHOUT auth token (OIDC handles auth)
-      - name: Configure npm registry
-        run: echo "@jgb-solutions:registry=https://registry.npmjs.org/" > .npmrc
+      # Append the scoped registry AFTER setup-node has written its auth token.
+      # setup-node writes to $HOME/.npmrc; we append to it, not overwrite.
+      - name: Configure npm scope
+        run: echo "@jgb-solutions:registry=https://registry.npmjs.org/" >> $HOME/.npmrc
 
       - name: Publish to npm
         run: npm publish --provenance --access public --ignore-scripts
+        env:
+          NODE_AUTH_TOKEN: ${{ env.NODE_AUTH_TOKEN }} # setup-node sets this env var automatically when OIDC is successful
