@@ -33,9 +33,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          registry-url: 'https://registry.npmjs.org'
 
       - name: Publish to npm
         run: npm publish --provenance --access public
-        # Using OIDC, so we don't need a specific NODE_AUTH_TOKEN secret.
-        # setup-node with registry-url will configure .npmrc to use the token provided by OIDC.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
