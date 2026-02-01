@@ -50,12 +50,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          registry-url: 'https://registry.npmjs.org'
+          # REMOVED registry-url to prevent setup-node from creating a broken .npmrc
 
       - name: Download Artifacts
         uses: actions/download-artifact@v4
         with:
           name: package-assets
+
+      # Manually configure registry scope WITHOUT auth token (OIDC handles auth)
+      - name: Configure npm registry
+        run: echo "@jgb-solutions:registry=https://registry.npmjs.org/" > .npmrc
 
       - name: Publish to npm
         run: npm publish --provenance --access public --ignore-scripts
