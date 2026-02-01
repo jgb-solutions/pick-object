@@ -71,3 +71,7 @@ console.log(selection);
 - **Array Support:** Automatically maps over arrays to pick fields from each item.
 - **Type Safety:** The return type is inferred from your selection.
 - **Zero Dependencies:** Tiny footprint.
+
+## License
+
+MIT © [JGB Solutions](https://github.com/jgb-solutions)
