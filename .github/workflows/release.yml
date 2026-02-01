@@ -6,12 +6,8 @@ on:
       - 'v*'
 
 jobs:
-  publish:
+  build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
-
     steps:
       - uses: actions/checkout@v4
 
@@ -29,11 +25,37 @@ jobs:
       - name: Build
         run: bun run build
 
-      - name: Setup Node.js for publishing
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-assets
+          path: |
+            dist
+            package.json
+            README.md
+            LICENSE
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+      
+      # Clean Node environment for OIDC publishing
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: package-assets
 
       - name: Publish to npm
         run: npm publish --provenance --access public
