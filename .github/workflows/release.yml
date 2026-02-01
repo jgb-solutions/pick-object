@@ -37,5 +37,5 @@ jobs:
 
       - name: Publish to npm
         run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # Using OIDC, so we don't need a specific NODE_AUTH_TOKEN secret.
+        # setup-node with registry-url will configure .npmrc to use the token provided by OIDC.
