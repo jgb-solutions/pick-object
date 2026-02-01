@@ -8,6 +8,16 @@
   "files": [
     "dist"
   ],
+  "author": "Jean Gerard Bousiquot <github@jgb.solutions>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jgb-solutions/pick-object.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jgb-solutions/pick-object/issues"
+  },
+  "homepage": "https://github.com/jgb-solutions/pick-object#readme",
   "publishConfig": {
     "access": "public"
   },

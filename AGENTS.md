@@ -64,3 +64,10 @@ This file provides instructions for AI agents working on this repository.
 - **Minimal Changes:** Do not refactor stable code unless explicitly requested.
 - **Verify:** Run `bun test` after *every* change.
 - **Types:** Ensure `bun run build` passes (which runs `tsc`) to verify type definition generation.
+
+## 6. Release Process
+
+To release a new version:
+1. Run `npm version patch -m "v%s"` (or `minor`/`major`)
+2. Run `git push --follow-tags`
+3. The GitHub Action will automatically build and publish to npm.

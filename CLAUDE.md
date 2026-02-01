@@ -21,7 +21,7 @@ Default to using Bun instead of Node.js.
 - `Bun.redis` for Redis. Don't use `ioredis`.
 - `Bun.sql` for Postgres. Don't use `pg` or `postgres.js`.
 - `WebSocket` is built-in. Don't use `ws`.
-- Prefer `Bun.file` over `node:fs`'s readFile/writeFile
+- - Prefer `Bun.file` over `node:fs`'s readFile/writeFile
 - Bun.$`ls` instead of execa.
 
 ## Testing
@@ -35,6 +35,13 @@ test("hello world", () => {
   expect(1).toBe(1);
 });
 ```
+
+## Release Process
+
+To release a new version:
+1. Run `npm version patch -m "v%s"` (or `minor`/`major`)
+2. Run `git push --follow-tags`
+3. The GitHub Action will automatically build and publish to npm.
 
 ## Frontend
 

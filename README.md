@@ -1,4 +1,9 @@
-# pick-object
+# @jgb-solutions/pick-object
+
+![NPM Version](https://img.shields.io/npm/v/@jgb-solutions/pick-object)
+![License](https://img.shields.io/npm/l/@jgb-solutions/pick-object)
+![Bundle Size](https://img.shields.io/bundlephobia/minzip/@jgb-solutions/pick-object)
+![Build Status](https://github.com/jgb-solutions/pick-object/actions/workflows/ci.yml/badge.svg)
 
 A lightweight, zero-dependency utility for selecting fields from complex objects and arrays, inspired by Prisma's `select` syntax.
 
@@ -7,19 +12,19 @@ It works with deeply nested objects and arrays of objects, providing type-safety
 ## Installation
 
 ```bash
-npm install pick-object
+npm install @jgb-solutions/pick-object
 # or
-bun add pick-object
+bun add @jgb-solutions/pick-object
 # or
-yarn add pick-object
+yarn add @jgb-solutions/pick-object
 # or
-pnpm add pick-object
+pnpm add @jgb-solutions/pick-object
 ```
 
 ## Usage
 
 ```typescript
-import { pick } from 'pick-object';
+import { pick } from '@jgb-solutions/pick-object';
 
 const user = {
   id: 1,
