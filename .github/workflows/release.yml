@@ -48,6 +48,7 @@ jobs:
       # Clean Node environment for OIDC publishing
       - name: Setup Node.js
         uses: actions/setup-node@v4
+        id: setup-node
         with:
           node-version: "20"
           registry-url: 'https://registry.npmjs.org'
@@ -57,12 +58,11 @@ jobs:
         with:
           name: package-assets
 
-      # Append the scoped registry AFTER setup-node has written its auth token.
-      # setup-node writes to $HOME/.npmrc; we append to it, not overwrite.
+      # Robustly append to the config file setup-node created using the env var
       - name: Configure npm scope
-        run: echo "@jgb-solutions:registry=https://registry.npmjs.org/" >> $HOME/.npmrc
+        run: echo "@jgb-solutions:registry=https://registry.npmjs.org/" >> "$NPM_CONFIG_USERCONFIG"
 
       - name: Publish to npm
         run: npm publish --provenance --access public --ignore-scripts
         env:
-          NODE_AUTH_TOKEN: ${{ env.NODE_AUTH_TOKEN }} # setup-node sets this env var automatically when OIDC is successful
+          NODE_AUTH_TOKEN: ${{ steps.setup-node.outputs.token }}
