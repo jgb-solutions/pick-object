@@ -45,16 +45,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Clean Node environment for OIDC publishing
       - name: Setup Node.js
         uses: actions/setup-node@v4
+        id: setup-node
         with:
           node-version: "20"
-          registry-url: https://registry.npmjs.org
+          registry-url: "https://registry.npmjs.org"
 
       - name: Download Artifacts
         uses: actions/download-artifact@v4
         with:
           name: package-assets
 
+      # Robustly append to the config file setup-node created using the env var
+      - name: Configure npm scope
+        run: echo "@jgb-solutions:registry=https://registry.npmjs.org/" >> "$NPM_CONFIG_USERCONFIG"
+
       - name: Publish to npm
         run: npm publish --provenance --access public --ignore-scripts
+        env:
+          NODE_AUTH_TOKEN: ${{ steps.setup-node.outputs.token }}
