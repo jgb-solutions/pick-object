@@ -1,0 +1,15 @@
+{
+  // Declarations for the published package: src/ only, no tests, no Bun types (the module runs on any
+  // runtime: browsers, Bun, Node, Cloudflare Workers).
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    "types": []
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/**/*.test.ts"]
+}

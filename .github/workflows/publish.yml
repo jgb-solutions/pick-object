@@ -1,0 +1,65 @@
+name: Publish
+
+# Publishes to npm when a GitHub release is published for a tag vX.Y.Z matching package.json's
+# version. npm trusted publishing (OIDC): GitHub Actions proves which repo and workflow is publishing,
+# so no npm token is stored anywhere, and npm adds a provenance statement on its own. The trusted
+# publisher (this repo, this workflow file, the "npm" environment) is set on npmjs.com, in the
+# package's settings, by the owner (README, "Publishing").
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+# Every third-party action is pinned to a full commit SHA (with its version alongside): a moved tag
+# can't change what runs in a workflow that publishes. Update the SHA and the comment together.
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    # GitHub's own runners: npm only generates provenance on cloud-hosted runners.
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # The "npm" environment can require the owner's approval before anything is published.
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+      - run: bun ci
+      - name: The tag matches package.json's version
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          version=$(bun -p "require('./package.json').version")
+          if [ "$TAG" != "v$version" ]; then
+            echo "::error::Release tag $TAG doesn't match package.json's version $version (expected v$version)."
+            exit 1
+          fi
+      - run: bun run format:check
+      - run: bun run typecheck
+      - run: bun run test
+      - run: bun run build
+      - run: bun run check:package
+      # Trusted publishing needs the npm CLI (11.5.1 or later, on Node 22.14 or later); `bun publish`
+      # isn't a documented trusted-publishing client.
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - run: npm install -g npm@11
+      # The dist-tag is explicit: a stable version moves "latest", a prerelease (1.2.0-beta.1) goes to
+      # "next" and never becomes what `bun add @jgb-solutions/pick-object` installs.
+      - name: Publish
+        run: |
+          version=$(bun -p "require('./package.json').version")
+          case "$version" in
+            *-*) tag=next ;;
+            *) tag=latest ;;
+          esac
+          npm publish --access public --ignore-scripts --tag "$tag"

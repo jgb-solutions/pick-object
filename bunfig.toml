@@ -1,0 +1,4 @@
+[install]
+# New package versions wait three days before Bun installs them, so hijacked releases are usually
+# caught first. This package ships to other apps: keep its own dependencies on that rule.
+minimumReleaseAge = "3d"

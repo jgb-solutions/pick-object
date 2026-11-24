@@ -24,7 +24,7 @@ pnpm add @jgb-solutions/pick-object
 ## Usage
 
 ```typescript
-import { pick } from '@jgb-solutions/pick-object';
+import { pick } from '@jgb-solutions/pick-object'
 
 const user = {
   id: 1,
@@ -32,25 +32,25 @@ const user = {
   profile: {
     bio: 'Hello world',
     age: 30,
-    ignored: 'this will not be picked'
+    ignored: 'this will not be picked',
   },
   posts: [
     { id: 101, title: 'First Post', content: '...' },
-    { id: 102, title: 'Second Post', content: '...' }
-  ]
-};
+    { id: 102, title: 'Second Post', content: '...' },
+  ],
+}
 
 const selection = pick(user, {
   id: true,
   profile: {
-    bio: true
+    bio: true,
   },
   posts: {
-    title: true
-  }
-});
+    title: true,
+  },
+})
 
-console.log(selection);
+console.log(selection)
 /*
 {
   id: 1,
