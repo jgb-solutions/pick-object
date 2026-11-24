@@ -2,34 +2,57 @@
   "name": "@jgb-solutions/pick-object",
   "version": "0.0.2",
   "description": "A Prisma-like object selection utility.",
-  "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
-  "author": "Jean Gerard Bousiquot <github@jgb.solutions>",
   "license": "MIT",
+  "author": "JGB Solutions",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jgb-solutions/pick-object.git"
   },
-  "bugs": {
-    "url": "https://github.com/jgb-solutions/pick-object/issues"
-  },
   "homepage": "https://github.com/jgb-solutions/pick-object#readme",
-  "publishConfig": {
-    "access": "public"
-  },
+  "bugs": "https://github.com/jgb-solutions/pick-object/issues",
+  "keywords": [
+    "pick",
+    "select",
+    "prisma",
+    "typescript",
+    "object"
+  ],
+  "type": "module",
   "sideEffects": false,
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "packageManager": "bun@1.4.5",
   "scripts": {
+    "build": "bun scripts/build.ts",
+    "typecheck": "bun check",
     "test": "bun test",
-    "build": "rm -rf dist && bun build ./src/index.ts --outfile ./dist/index.js --format esm && tsc",
-    "prepublishOnly": "bun run build"
+    "format": "bun fmt .",
+    "format:check": "bun fmt --check .",
+    "check:package": "bun scripts/check-package.ts",
+    "prepublishOnly": "bun run build && bun run check:package"
   },
   "devDependencies": {
-    "@types/bun": "^1.3.8",
-    "typescript": "^5.9.3"
-  },
-  "peerDependencies": {}
+    "@types/bun": "1.4.5",
+    "typescript": "6.0.3"
+  }
 }

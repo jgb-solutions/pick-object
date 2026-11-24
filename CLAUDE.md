@@ -1,118 +1,29 @@
----
-description: Use Bun instead of Node.js, npm, pnpm, or vite.
-globs: "*.ts, *.tsx, *.html, *.css, *.js, *.jsx, package.json"
-alwaysApply: false
----
+# pick-object: rules
 
-Default to using Bun instead of Node.js.
+`@jgb-solutions/pick-object` is a public npm package (MIT): `pick(data, shape)` selects fields from objects and arrays with a
+Prisma-like shape, and its result type follows the shape. Read README.md first.
 
-- Use `bun <file>` instead of `node <file>` or `ts-node <file>`
-- Use `bun test` instead of `jest` or `vitest`
-- Use `bun build <file.html|file.ts|file.css>` instead of `webpack` or `esbuild`
-- Use `bun install` instead of `npm install` or `yarn install` or `pnpm install`
-- Use `bun run <script>` instead of `npm run <script>` or `yarn run <script>` or `pnpm run <script>`
-- Use `bunx <package> <command>` instead of `npx <package> <command>`
-- Bun automatically loads .env, so don't use dotenv.
+- **Bun only**, for installing, scripts, tests, types and formatting: `bun install`, `bun run test` (`bun test`),
+  `bun run typecheck` (`bun check`), `bun run format` (`bun fmt`, reads `.prettierrc`), `bun run build`. The npm CLI is used for one
+  thing only: the publish step in `.github/workflows/publish.yml` (npm's trusted publishing needs it).
+- **Zero runtime dependencies.** The package is plain JavaScript that runs in browsers, Bun, Node and Cloudflare Workers: no Bun or
+  Node APIs in `src/`.
+- **Strict types, no `any`.** `src/` is checked with `strict`, `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes`.
+  Public types are part of the API: a type change is a version change.
+- **Every behaviour has a test**, in `tests/`: `null`, `undefined`, empty arrays, nested arrays, and the type of the result.
+- **Fast.** `pick` runs on hot paths (API responses): no recursion helpers that allocate per key, no `Object.entries` copies.
+- **Before a PR:** `bun run format:check`, `bun run typecheck`, `bun run test`, `bun run build`, `bun run check:package` (CI runs
+  the same, plus `bun audit`). `check:package` checks the tarball: only `dist/`, README, CHANGELOG, LICENSE and package.json, and
+  nothing app-specific (IDs, team domains, real email addresses).
+- **Dependencies** wait three days after release before Bun installs them (`bunfig.toml`). Pin exact versions.
+- **Actions** in `.github/workflows/` are pinned to full commit SHAs, with the version in a comment. Update both together.
 
-## APIs
+## Releasing
 
-- `Bun.serve()` supports WebSockets, HTTPS, and routes. Don't use `express`.
-- `bun:sqlite` for SQLite. Don't use `better-sqlite3`.
-- `Bun.redis` for Redis. Don't use `ioredis`.
-- `Bun.sql` for Postgres. Don't use `pg` or `postgres.js`.
-- `WebSocket` is built-in. Don't use `ws`.
-- - Prefer `Bun.file` over `node:fs`'s readFile/writeFile
-- Bun.$`ls` instead of execa.
+1. A PR bumps `version` in package.json and adds the CHANGELOG entry.
+2. After it merges, create a GitHub release for the tag `vX.Y.Z` (the same version) on main.
+3. The release starts `publish.yml`, which waits for approval in the `npm` environment, checks the tag against package.json, runs
+   every check, then publishes with npm's trusted publishing (no token, with provenance). A stable version gets the `latest` tag; a
+   prerelease (`1.2.0-beta.1`) gets `next`.
 
-## Testing
-
-Use `bun test` to run tests.
-
-```ts#index.test.ts
-import { test, expect } from "bun:test";
-
-test("hello world", () => {
-  expect(1).toBe(1);
-});
-```
-
-## Release Process
-
-To release a new version:
-1. Run `npm version patch -m "v%s"` (or `minor`/`major`)
-2. Run `git push --follow-tags`
-3. The GitHub Action will automatically build and publish to npm.
-
-## Frontend
-
-Use HTML imports with `Bun.serve()`. Don't use `vite`. HTML imports fully support React, CSS, Tailwind.
-
-Server:
-
-```ts#index.ts
-import index from "./index.html"
-
-Bun.serve({
-  routes: {
-    "/": index,
-    "/api/users/:id": {
-      GET: (req) => {
-        return new Response(JSON.stringify({ id: req.params.id }));
-      },
-    },
-  },
-  // optional websocket support
-  websocket: {
-    open: (ws) => {
-      ws.send("Hello, world!");
-    },
-    message: (ws, message) => {
-      ws.send(message);
-    },
-    close: (ws) => {
-      // handle close
-    }
-  },
-  development: {
-    hmr: true,
-    console: true,
-  }
-})
-```
-
-HTML files can import .tsx, .jsx or .js files directly and Bun's bundler will transpile & bundle automatically. `<link>` tags can point to stylesheets and Bun's CSS bundler will bundle.
-
-```html#index.html
-<html>
-  <body>
-    <h1>Hello, world!</h1>
-    <script type="module" src="./frontend.tsx"></script>
-  </body>
-</html>
-```
-
-With the following `frontend.tsx`:
-
-```tsx#frontend.tsx
-import React from "react";
-import { createRoot } from "react-dom/client";
-
-// import .css files directly and it works
-import './index.css';
-
-const root = createRoot(document.body);
-
-export default function Frontend() {
-  return <h1>Hello, world!</h1>;
-}
-
-root.render(<Frontend />);
-```
-
-Then, run index.ts
-
-```sh
-bun --hot ./index.ts
-```
-
-For more information, read the Bun API docs in `node_modules/bun-types/docs/**.mdx`.
+Never publish by hand and never store an npm token.
