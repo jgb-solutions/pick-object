@@ -12,6 +12,7 @@ Prisma-like shape, and its result type follows the shape. Read README.md first.
   Public types are part of the API: a type change is a version change.
 - **Every behaviour has a test**, in `tests/`: `null`, `undefined`, empty arrays, nested arrays, and the type of the result.
 - **Fast.** `pick` runs on hot paths (API responses): no recursion helpers that allocate per key, no `Object.entries` copies.
+  Run `bun run bench` before and after a change to `src/` and compare; plain objects must stay as fast as before.
 - **Before a PR:** `bun run format:check`, `bun run typecheck`, `bun run test`, `bun run build`, `bun run check:package` (CI runs
   the same, plus `bun audit`). `check:package` checks the tarball: only `dist/`, README, CHANGELOG, LICENSE and package.json, and
   nothing app-specific (IDs, team domains, real email addresses).

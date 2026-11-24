@@ -1,6 +1,6 @@
 {
   "name": "@jgb-solutions/pick-object",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "A Prisma-like object selection utility.",
   "license": "MIT",
   "author": "JGB Solutions",
@@ -49,6 +49,7 @@
     "format": "bun fmt .",
     "format:check": "bun fmt --check .",
     "check:package": "bun scripts/check-package.ts",
+    "bench": "bun scripts/bench.ts",
     "prepublishOnly": "bun run build && bun run check:package"
   },
   "devDependencies": {
